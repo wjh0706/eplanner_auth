@@ -1,0 +1,17 @@
+version: '1'
+services:
+  auth-mongo:
+    image: mongo
+    container_name: auth-mongo-depl
+    ports:
+      - 27017:27017
+
+  auth:
+    image: auth
+    container_name: auth-depl
+    environment:
+      - MONGO_URI=mongodb://auth-mongo:27017/auth
+    ports:
+      - 3000:3000
+    depends_on:
+      - auth-mongo
