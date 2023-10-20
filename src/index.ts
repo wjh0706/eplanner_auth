@@ -24,9 +24,9 @@ const start = async () => {
         throw new DatabaseConnectionError();
     }
 
-    // Initialize the server listening on PORT 3000
-    app.listen(3000, () => {
-        console.log('Auth-Service Server Listening on Port 3000')
+    // Initialize the server listening on PORT 80
+    app.listen(80, () => {
+        console.log('Auth-Service Server Listening on Port 80')
     })
 }
 

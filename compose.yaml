@@ -12,6 +12,6 @@ services:
     environment:
       - MONGO_URI=mongodb://auth-mongo:27017/auth
     ports:
-      - 3000:3000
+      - 80:80
     depends_on:
       - auth-mongo
