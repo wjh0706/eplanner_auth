@@ -9,6 +9,8 @@ COPY package.json .
 
 RUN npm install --only=prod
 
+EXPOSE 80
+
 COPY . . 
 
 CMD ["npm", "start"]
