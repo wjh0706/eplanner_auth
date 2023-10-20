@@ -5,6 +5,7 @@ import cookieSession from 'cookie-session';
 import { NotFoundError } from "./errors/not-found-error";
 // Server endpoints import 
 import { UserRouter } from './routes/auth-user';
+import { SingUpRouter } from './routes/auth-signup';
 
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(cookieSession({
 
 // Server Routes
 app.use(UserRouter);
+app.use(SingUpRouter);
 
 app.all('*', async () => {
     throw new NotFoundError();
