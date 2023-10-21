@@ -49,19 +49,7 @@ router.post(
 
 
     user.verificationToken = verificationToken;
-    await user.save();
-
-    // generate JWT token
-    const JWT = jwt.sign({
-          _id: user._id,
-          email: user.email
-    },
-        process.env.JWT_KEY!
-    );
-
-    req.session = {
-          jwt: JWT
-    }    
+    await user.save(); 
 
     // Send a verification email
     // TO-DO

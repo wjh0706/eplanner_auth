@@ -7,6 +7,7 @@ import { NotFoundError } from "./errors/not-found-error";
 import { UserRouter } from './routes/auth-user';
 import { SingUpRouter } from './routes/auth-signup';
 import { VerifyRouter } from './routes/auth-verify';
+import { SingOutRouter } from './routes/auth-signout';
 
 const app = express();
 app.set('trust proxy', true);
@@ -22,6 +23,7 @@ app.use(cookieSession({
 app.use(UserRouter);
 app.use(SingUpRouter);
 app.use(VerifyRouter);
+app.use(SingOutRouter);
 
 app.all('*', async () => {
     throw new NotFoundError();
