@@ -4,8 +4,9 @@ import { body } from 'express-validator';
 import { validateRequest } from '../middleware/validate-request';
 import { BadRequestError } from '../errors/bad-request-error';
 import { User } from '../models/user-model';
+import {Email} from "../utils/email";
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+
 
 const router = express.Router();
 
@@ -21,14 +22,9 @@ router.post(
   validateRequest,
   async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    //hash the pwd
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     //encrypt the email
-    const encryptedEmail = jwt.sign({ 
-      email:email,
-   }, process.env.ENCRYPT_KEY!);
+    const encryptedEmail = await Email.encryptEmail(email)
 
     // check if Email is already in use.
     const userExists = await User.findOne({
@@ -42,7 +38,7 @@ router.post(
     
     const user = new User({
       email: encryptedEmail,
-      password: hashedPassword,
+      password: password,
     });
 
     await user.save()
