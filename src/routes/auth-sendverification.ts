@@ -5,48 +5,45 @@ import { validateRequest } from '../utils/validate-request';
 import { BadRequestError } from '../utils/errors/bad-request-error';
 import { User } from '../models/user-model';
 import { Email } from "../utils/email";
-import { Password } from "../utils/password";
 import {sendEmail} from "../utils/send_email";
 import jwt from 'jsonwebtoken';
 
 
 const router = express.Router();
 
-router.post(
-  '/api/auth/signup',
+router.put(
+  '/api/auth/sendverification',
   [
     body('email').isEmail().withMessage('Email must be valid'),
-    body('password')
-      .trim()
-      .isLength({ min: 8, max: 20 })
-      .withMessage('Password must be between 8 and 20 characters'),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { email } = req.body;
 
     //encrypt the email
     const encryptedEmail = await Email.encryptEmail(email);
 
-    //hash the pwd
-    const hashedPassword = await Password.toHash(password);
-
     // check if Email is already in use.
-    const userExists = await User.findOne({
+    const existingUser = await User.findOne({
           email: encryptedEmail
     })
 
 
-    if (userExists) {
-      throw new BadRequestError('User already exists');
+    if (!existingUser) {
+      throw new BadRequestError('User not found');
     }
-    
-    const user = new User({
-      email: encryptedEmail,
-      password: hashedPassword,
-    });
 
-    await user.save()
+    if (existingUser.isVerified) {
+        throw new BadRequestError('User was verified');
+      }
+    
+    const verificationToken = jwt.sign({ 
+       _id:existingUser._id,
+    }, process.env.VERIFY_KEY!);
+
+
+    existingUser.verificationToken = verificationToken;
+    await existingUser.save(); 
 
     // Send a verification email
     // TO-DO
@@ -62,9 +59,9 @@ router.post(
     // .catch((error) => {
     // console.error('Email sending error:', error);
     // });
-    res.status(201).send(user);
+    res.status(200).send(existingUser);
     //res.status(201).send("sign up success!");
   }
 );
 
-export { router as SingUpRouter };
+export { router as SendVerificationRouter };

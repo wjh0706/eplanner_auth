@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { app } from "./app";
-import { DatabaseConnectionError } from "./errors/database-connection-error";
+import { DatabaseConnectionError } from "./utils/errors/database-connection-error";
 
 const start = async () => {
     console.log('Authentication Service is Starting...');

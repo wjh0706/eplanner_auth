@@ -10,15 +10,18 @@ import jwt from 'jsonwebtoken';
 const router = express.Router();
 
 // Verification route to handle the verification token
-router.put('/api/auth/verify',  [
+router.put('/api/auth/resetpwd',  [
   body('password')
     .trim()
-    .notEmpty()
-    .withMessage('You must supply a password')
+    .isLength({ min: 8, max: 20 })
+    .withMessage('Password must be between 8 and 20 characters'),
 ], validateRequest, async (req: Request, res: Response) => {
     const token = req.query.token as string;
     
     const { password } = req.body;
+
+    //hash the pwd
+    const hashedPassword = await Password.toHash(password);
 
     if (!token) {
       return new BadRequestError('Null Token');
@@ -34,25 +37,18 @@ router.put('/api/auth/verify',  [
         throw new BadRequestError('Invalid Token');
       }
 
-      if (user.isVerified) {
-        throw new BadRequestError('Already Verified!');
-      }
-      
-      const passwordMatch = await Password.compare(user.password, password);
-
-      if(!passwordMatch){
-        throw new BadRequestError('Invalid Credentials');
+      if (!user.isVerified) {
+        throw new BadRequestError('Unverified User!');
       }
 
-      user.isVerified = true;
       user.set({ verificationToken: undefined });
+      user.password = hashedPassword;
       await user.save();
-  
       res.status(200).send(user);
-      //res.status(200).send('Email verification is successful!');
+      //res.status(200).send('Password reset is successful!');
     } catch (error) {
         throw error;
     }
   });
 
-  export { router as VerifyRouter };
+export { router as ResetPasswordRouter };
