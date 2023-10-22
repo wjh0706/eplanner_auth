@@ -12,6 +12,7 @@ import { SignInRouter } from './routes/auth-signin';
 import { ForgetPasswordRouter } from './routes/auth-forgetpwd';
 import { ResetPasswordRouter } from './routes/auth-resetpwd';
 import { SendVerificationRouter } from './routes/auth-sendverification';
+import {errorHandler} from './utils/error-handler'
 
 const app = express();
 app.set('trust proxy', true);
@@ -22,6 +23,7 @@ app.use(cookieSession({
     })
 );
 // User Errorhandler middleware
+app.use(errorHandler);
 
 // Server Routes
 app.use(UserRouter);
