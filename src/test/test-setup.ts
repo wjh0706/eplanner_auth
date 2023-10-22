@@ -16,7 +16,11 @@ beforeAll(async () => {
 
     const mongoUri = mongo.getUri();
 
-    await mongoose.connect(mongoUri, {});
+    await mongoose.connect(mongoUri, {
+        dbName: 'test-database',
+      });
+
+    console.log("Mongo Db connected!")
 })
 
 beforeEach(async () => {
