@@ -18,6 +18,7 @@ interface UserModel extends mongoose.Model<UserDoc> {
   build(attrs: UserAttrs): UserDoc;
 }
 
+
 const userSchema = new mongoose.Schema(
   {
     email: {
