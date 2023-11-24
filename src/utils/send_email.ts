@@ -1,32 +1,72 @@
-import nodemailer from 'nodemailer';
+import { SES } from "aws-sdk";
 
-export async function sendEmail(
-  to: string,
-  subject: string,
-  text: string,
-  html: string
-): Promise<void> {
-  try {
-    const transporter = nodemailer.createTransport({
-      service: 'Gmail',
-      auth: {
-        user: 'abc@abc.abc',
-        pass: 'pwd',
-      },
+interface EmailParams {
+  recipientEmail: string;
+  subject: string;
+  content: string;
+}
+
+class SESEmailer {
+  private ses: SES;
+
+  // constructor() {
+  //   // Set up SES with your AWS credentials
+  //   this.ses = new SES({
+  //     region: "us-east-1",
+  //     accessKeyId: "AKIAXXHEB7HTY5IHPWXE",
+  //     secretAccessKey: "DDi81ZKImAZ3qBIFRwa09HvFHxsOB/IkzhIWRZoT",
+  //   });
+  // }
+
+  // async sendEmail(params: EmailParams): Promise<void> {
+  //   const { recipientEmail, subject, content } = params;
+
+  //   const paramsSES: SES.SendEmailRequest = {
+  //     Destination: {
+  //       ToAddresses: [recipientEmail],
+  //     },
+  //     Message: {
+  //       Body: {
+  //         Text: { Data: content },
+  //       },
+  //       Subject: { Data: subject },
+  //     },
+  //     Source: "wujianghao0706@gmail.com",
+  //   };
+
+  constructor() {
+    // Set up SES with your AWS credentials
+    this.ses = new SES({
+      region: process.env.AWS_REGION!,
+      accessKeyId: process.env.AWS_SES_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.AWS_SES_SEC_KEY!,
     });
+  }
 
-    const mailOptions = {
-      from: 'abc@abc.abc',
-      to,
-      subject,
-      text,
-      html,
+  async sendEmail(params: EmailParams): Promise<void> {
+    const { recipientEmail, subject, content } = params;
+
+    const paramsSES: SES.SendEmailRequest = {
+      Destination: {
+        ToAddresses: [recipientEmail],
+      },
+      Message: {
+        Body: {
+          Text: { Data: content },
+        },
+        Subject: { Data: subject },
+      },
+      Source: process.env.AWS_SES_SENDER!,
     };
 
-    await transporter.sendMail(mailOptions);
-    console.log(`Email sent to ${to}`);
-  } catch (error) {
-    console.error('Error sending email:', error);
-    throw error;
+    try {
+      await this.ses.sendEmail(paramsSES).promise();
+      console.log("Email sent successfully.");
+    } catch (error) {
+      console.error("Error sending email:", error);
+      throw error;
+    }
   }
 }
+
+export default SESEmailer;

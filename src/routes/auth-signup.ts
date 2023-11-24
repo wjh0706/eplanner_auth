@@ -6,9 +6,6 @@ import { BadRequestError } from '../utils/errors/bad-request-error';
 import { User } from '../models/user-model';
 import { Email } from "../utils/email";
 import { Password } from "../utils/password";
-import {sendEmail} from "../utils/send_email";
-import jwt from 'jsonwebtoken';
-
 
 const router = express.Router();
 
@@ -48,20 +45,6 @@ router.post(
 
     await user.save()
 
-    // Send a verification email
-    // TO-DO
-    // const to = 'recipient@example.com';
-    // const subject = 'Test Email';
-    // const text = 'This is a test email sent from my application.';
-    // const html = '<p>This is a <strong>test email</strong> sent from my application.</p>';
-
-    // sendEmail(to, subject, text, html)
-    //   .then(() => {
-    // console.log('Email sent successfully');
-    // })
-    // .catch((error) => {
-    // console.error('Email sending error:', error);
-    // });
     res.status(201).send(user);
     //res.status(201).send("sign up success!");
   }

@@ -5,7 +5,7 @@ import { validateRequest } from '../utils/validate-request';
 import { BadRequestError } from '../utils/errors/bad-request-error';
 import { User } from '../models/user-model';
 import { Email } from "../utils/email";
-import {sendEmail} from "../utils/send_email";
+import SESEmailer from "../utils/send_email";
 import jwt from 'jsonwebtoken';
 
 
@@ -39,20 +39,19 @@ router.put(
 
     user.verificationToken = verificationToken;
 
-    // Send a verification email
-    // TO-DO
-    // const to = 'recipient@example.com';
-    // const subject = 'Test Email';
-    // const text = 'This is a test email sent from my application.';
-    // const html = '<p>This is a <strong>test email</strong> sent from my application.</p>';
+    // Send Account Verification Email
+    const emailer = new SESEmailer();
 
-    // sendEmail(to, subject, text, html)
-    //   .then(() => {
-    // console.log('Email sent successfully');
-    // })
-    // .catch((error) => {
-    // console.error('Email sending error:', error);
-    // });
+    const emailParams = {
+      recipientEmail: email,
+      subject: "Password Reset Link",
+      content: "Hello, plase click the following link to reset your password! \n"+process.env.DOMAIN!+"api/auth/resetpwd?token=" + verificationToken,
+    };
+
+    emailer
+      .sendEmail(emailParams)
+      .then(() => console.log("Email sent successfully."))
+      .catch((error) => console.error("Error:", error));
     res.status(200).send(user);
     //res.status(201).send("Reset pwd link sent successfully!");
   }
