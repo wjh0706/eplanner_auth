@@ -52,9 +52,8 @@ router.post('/api/auth/signin', [
             process.env.JWT_KEY!
         )
 
-        req.session = {
-            jwt: JWT
-        }
+        req.session.jwt = JWT;
+        
         res.status(200).send(existingUser);
         //res.status(200).send("sign in success!");
     }

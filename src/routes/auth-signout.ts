@@ -4,7 +4,7 @@ const router = express.Router();
 
 router.get('/api/auth/signout', (req: Request, res: Response) => {
     
-    req.session = null;
+    req.session.jwt = undefined;
 
     res.send({});
 
