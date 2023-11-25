@@ -97,6 +97,11 @@ import express, { Request, Response, NextFunction } from "express";
 import passport from "passport";
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 import jwt from "jsonwebtoken";
+interface User {
+  profile: Profile;
+  accessToken: string;
+  refreshToken: string;
+}
 
 // Create an Express router
 const router = express.Router();
@@ -111,10 +116,7 @@ passport.use(
       callbackURL: "http://52.207.209.208.nip.io/api/auth/google/callback",
     },
     (accessToken, refreshToken, profile, done) => {
-      // Save the user's profile in the JWT payload
-      const user = { profile, accessToken, refreshToken };
-      const token = jwt.sign(user, process.env.JWT_KEY!, { expiresIn: "1h" });
-      return done(null, token);
+      return done(null, { profile, accessToken, refreshToken });
     }
   )
 );
@@ -133,8 +135,17 @@ router.get(
   "/api/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req: Request, res: Response) => {
-    // Successful authentication, redirect to a success page or handle it accordingly
-    res.redirect("/");
+    // Successful authentication, create JWT and set it in the session
+    const user: User = req.user as User; // Type assertion to User
+    const JWT = jwt.sign(user, process.env.JWT_KEY!);
+
+    // Set the JWT in the session
+    req.session = {
+      jwt: JWT,
+    };
+
+    // Redirect or respond as needed
+    res.redirect("/api/auth/getemail");
   }
 );
 
@@ -147,9 +158,9 @@ router.get(
       return res.status(401).json({ error: "Not authenticated" });
     }
 
-    // Extract the user from the JWT payload
-    const token = req.user as string;
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as { profile: Profile };
+    // Extract the user from the session
+    const token = req.session?.jwt;
+    const decodedToken = jwt.verify(token, process.env.JWT_KEY!) as User;
 
     // Extract the email from the user's profile
     const email = decodedToken?.profile?.emails?.[0]?.value;
