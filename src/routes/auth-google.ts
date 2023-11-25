@@ -95,21 +95,11 @@
 
 import express, { Request, Response, NextFunction } from "express";
 import passport from "passport";
-import session from "express-session";
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 import jwt from "jsonwebtoken";
 
 // Create an Express router
 const router = express.Router();
-
-// Configure session middleware
-router.use(
-  session({
-    secret: "your-secret-key", // Change this to a secure key
-    resave: false,
-    saveUninitialized: true,
-  })
-);
 
 // Passport configuration
 passport.use(
@@ -121,25 +111,16 @@ passport.use(
       callbackURL: "http://52.207.209.208.nip.io/api/auth/google/callback",
     },
     (accessToken, refreshToken, profile, done) => {
-      // Save the user's profile in the session
-      return done(null, profile);
+      // Save the user's profile in the JWT payload
+      const user = { profile, accessToken, refreshToken };
+      const token = jwt.sign(user, process.env.JWT_SECRET!, { expiresIn: "1h" });
+      return done(null, token);
     }
   )
 );
 
-// Serialize user to store in the session
-passport.serializeUser((user: any, done) => {
-  done(null, user);
-});
-
-// Deserialize user from the session
-passport.deserializeUser((obj: any, done) => {
-  done(null, obj);
-});
-
-// Initialize Passport and restore authentication state if available from the session
+// Initialize Passport
 router.use(passport.initialize());
-router.use(passport.session());
 
 // Define the Google authentication route
 router.get(
@@ -166,19 +147,18 @@ router.get(
       return res.status(401).json({ error: "Not authenticated" });
     }
 
+    // Extract the user from the JWT payload
+    const token = req.user as string;
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET!) as { profile: Profile };
+
     // Extract the email from the user's profile
-    const email = (req.user as Profile)?.emails?.[0]?.value;
+    const email = decodedToken?.profile?.emails?.[0]?.value;
 
     if (!email) {
       return res.status(400).json({ error: "Email not found in user profile" });
     }
 
-    // Generate a JWT token with the user's email
-    const token = jwt.sign({ email }, process.env.JWT_KEY!, {
-      expiresIn: "1h",
-    });
-
-    // Respond with the user's email in the token
+    // Respond with the user's email
     res.json({ email, token });
   }
 );
