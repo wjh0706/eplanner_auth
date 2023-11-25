@@ -1,15 +1,21 @@
-import { Session, SessionData } from "express-session";
+// import "express-session";
+// import jwt from "jsonwebtoken";
 
-declare module "express-session" {
-  interface SessionData {
-    jwt?: string;
-  }
-}
+// interface UserPayload {
+//     id: string;
+//     email: string;
+// }
 
-declare global {
-    namespace Express {
-      interface Request {
-        currentUser?: UserPayload;
-      }
-    }
-  }
+// declare module "express-session" {
+//   interface Session {
+//     jwt?: string;
+//   }
+// }
+
+// declare global {
+//   namespace Express {
+//     interface Request {
+//       currentUser?: UserPayload;
+//     }
+//   }
+// }
