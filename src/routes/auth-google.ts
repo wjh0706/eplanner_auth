@@ -180,7 +180,6 @@ import express, { Request, Response, NextFunction } from "express";
 import passport from "passport";
 import session from "express-session";
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
-import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
@@ -217,19 +216,11 @@ router.get(
   "/api/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req: Request, res: Response) => {
-    // Successful authentication, create JWT and set it in the session
-    const user = req.user as { profile: Profile; accessToken: string; refreshToken: string };
-    const JWT = jwt.sign(user, process.env.JWT_KEY!);
-
-    // Set the JWT in the session
-    req.session.jwt = JWT;
-
-    // Redirect or respond as needed
+    // Successful authentication
     res.redirect("/api/auth/getemail");
   }
 );
 
-// Get user's email route
 // Get user's email route
 router.get(
   "/api/auth/getemail",
@@ -240,27 +231,17 @@ router.get(
     }
 
     // Extract the user from the session
-    const token = req.session?.jwt;
-    
-    // Verify the JWT and provide a type assertion
-    try {
-      const decodedToken = jwt.verify(token!, process.env.JWT_KEY!) as {
-        profile?: { emails?: { value?: string }[] };
-      };
+    const user = req.user as { profile: Profile; accessToken: string; refreshToken: string };
 
-      // Now you can access properties without TypeScript complaining
-      const email = decodedToken?.profile?.emails?.[0]?.value;
+    // Now you can access properties without TypeScript complaining
+    const email = user?.profile?.emails?.[0]?.value;
 
-      if (!email) {
-        return res.status(400).json({ error: "Email not found in user profile" });
-      }
-
-      // Respond with the user's email
-      res.json({ email, token });
-    } catch (error) {
-      // Handle JWT verification errors
-      return res.status(401).json({ error: "Invalid or expired token" });
+    if (!email) {
+      return res.status(400).json({ error: "Email not found in user profile" });
     }
+
+    // Respond with the user's email
+    res.json({ email });
   }
 );
 

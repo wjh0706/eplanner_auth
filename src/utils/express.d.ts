@@ -1,4 +1,4 @@
-import "express-session";
+import { Session, SessionData } from "express-session";
 import jwt from "jsonwebtoken";
 
 interface UserPayload {
