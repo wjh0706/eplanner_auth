@@ -14,6 +14,7 @@ import { ResetPasswordRouter } from './routes/auth-resetpwd';
 import { SendVerificationRouter } from './routes/auth-sendverification';
 import {errorHandler} from './utils/error-handler'
 import { GoogleAuthRouter } from './routes/auth-google';
+import { DeleteRouter } from './routes/auth-delete';
 
 const app = express();
 app.set('trust proxy', true);
@@ -36,6 +37,7 @@ app.use(ForgetPasswordRouter);
 app.use(ResetPasswordRouter);
 app.use(SendVerificationRouter);
 app.use(GoogleAuthRouter);
+app.use(DeleteRouter);
 
 app.all('*', async () => {
     throw new NotFoundError();
