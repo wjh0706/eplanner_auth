@@ -211,6 +211,8 @@ passport.use(
 router.use(passport.initialize());
 router.use(passport.session());
 
+router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
 // Google callback route
 router.get(
   "/api/auth/google/callback",
