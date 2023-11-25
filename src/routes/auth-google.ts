@@ -35,6 +35,14 @@ passport.use(
   )
 );
 
+passport.serializeUser((user: any, done) => {
+  done(null, user);
+});
+
+passport.deserializeUser((obj: any, done) => {
+  done(null, obj);
+});
+
 router.use(passport.initialize());
 router.use(passport.session());
 
