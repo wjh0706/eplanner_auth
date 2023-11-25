@@ -30,7 +30,7 @@
     "express-validator": "^6.15.0",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^7.0.3",
-    "passport": "^0.6.0",
+    "passport": "^0.5.3",
     "passport-google-oauth20": "^2.0.0",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.0.3",
