@@ -5,7 +5,7 @@ import { validateRequest } from '../utils/validate-request';
 import { BadRequestError } from '../utils/errors/bad-request-error';
 import { User } from '../models/user-model';
 import { Email } from "../utils/email";
-import SESEmailer from "../utils/send_email";
+import SESEmailer from "../utils/send-email";
 import jwt from 'jsonwebtoken';
 
 

@@ -9,31 +9,6 @@ interface EmailParams {
 class SESEmailer {
   private ses: SES;
 
-  // constructor() {
-  //   // Set up SES with your AWS credentials
-  //   this.ses = new SES({
-  //     region: "us-east-1",
-  //     accessKeyId: "AKIAXXHEB7HTY5IHPWXE",
-  //     secretAccessKey: "DDi81ZKImAZ3qBIFRwa09HvFHxsOB/IkzhIWRZoT",
-  //   });
-  // }
-
-  // async sendEmail(params: EmailParams): Promise<void> {
-  //   const { recipientEmail, subject, content } = params;
-
-  //   const paramsSES: SES.SendEmailRequest = {
-  //     Destination: {
-  //       ToAddresses: [recipientEmail],
-  //     },
-  //     Message: {
-  //       Body: {
-  //         Text: { Data: content },
-  //       },
-  //       Subject: { Data: subject },
-  //     },
-  //     Source: "wujianghao0706@gmail.com",
-  //   };
-
   constructor() {
     // Set up SES with your AWS credentials
     this.ses = new SES({
