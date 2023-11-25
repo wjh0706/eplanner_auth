@@ -28,7 +28,7 @@ router.get('/api/auth/user', async (req: Request & { session: MySession }, res: 
   // Check if user is authenticated
   if (!req.session || !req.session.user) {
     // User is not authenticated
-    return res.status(401).send({ message: 'Unauthorized' });
+    return res.status(401).send({ user:null });
   }
 
   // User is authenticated, retrieve user details
