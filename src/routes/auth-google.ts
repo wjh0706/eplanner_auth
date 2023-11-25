@@ -21,7 +21,7 @@
 //       try {
 //         const req = (done as any).req;
 //         const email = profile.emails ? profile.emails[0]?.value : null;
-//         const hashedDefaultPassword = await Password.toHash('defaultpwd0');     
+//         const hashedDefaultPassword = await Password.toHash('defaultpwd0');
 //         if (!email) {
 //             // Handle the case where the user's email is not available
 //             //throw new BadRequestError('User email not available');
@@ -48,7 +48,7 @@
 //         const JWT = jwt.sign({
 //           _id: user._id,
 //           email: user.email
-//       }, 
+//       },
 //           process.env.JWT_KEY!
 //       )
 
@@ -93,24 +93,22 @@
 
 // export { router as GoogleAuthRouter };
 
-import express, { Request, Response, NextFunction } from 'express';
-import passport from 'passport';
-import { Strategy as GoogleStrategy, Profile } from 'passport-google-oauth20';
-import jwt from 'jsonwebtoken';
+import express, { Request, Response, NextFunction } from "express";
+import passport from "passport";
+import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
+import jwt from "jsonwebtoken";
 
 // Create an Express router
 const router = express.Router();
-
-// Replace these values with your actual Google API credentials
-
 
 // Passport configuration
 passport.use(
   new GoogleStrategy(
     {
-      clientID: '1039548241933-5fvl39vo8ejc7ih599hmv2gvu0q2jfpp.apps.googleusercontent.com',
-      clientSecret: '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',
-      callbackURL: 'http://3.91.67.221.nip.io/api/auth/google/callback',
+      clientID:
+        "1039548241933-5fvl39vo8ejc7ih599hmv2gvu0q2jfpp.apps.googleusercontent.com",
+      clientSecret: "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",
+      callbackURL: "http://3.91.67.221.nip.io/api/auth/google/callback",
     },
     (accessToken, refreshToken, profile, done) => {
       // Save the user's profile in the session
@@ -135,40 +133,44 @@ router.use(passport.session());
 
 // Define the Google authentication route
 router.get(
-  '/api/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+  "/api/auth/google",
+  passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
 // Define the Google callback route
 router.get(
-  '/api/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/' }),
+  "/api/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }),
   (req: Request, res: Response) => {
     // Successful authentication, redirect to a success page or handle it accordingly
-    res.redirect('/');
+    res.redirect("/");
   }
 );
 
 // Define a route to get the user's email after authentication
-router.get('/api/auth/getemail', (req: Request, res: Response, next: NextFunction) => {
-  // Check if the user is authenticated
-  if (!req.isAuthenticated()) {
-    return res.status(401).json({ error: 'Not authenticated' });
+router.get(
+  "/api/auth/getemail",
+  (req: Request, res: Response, next: NextFunction) => {
+    // Check if the user is authenticated
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    // Extract the email from the user's profile
+    const email = (req.user as Profile)?.emails?.[0]?.value;
+
+    if (!email) {
+      return res.status(400).json({ error: "Email not found in user profile" });
+    }
+
+    // Generate a JWT token with the user's email
+    const token = jwt.sign({ email }, process.env.JWT_KEY!, {
+      expiresIn: "1h",
+    });
+
+    // Respond with the user's email in the token
+    res.json({ email, token });
   }
+);
 
-  // Extract the email from the user's profile
-  const email = (req.user as Profile)?.emails?.[0]?.value;
-
-  if (!email) {
-    return res.status(400).json({ error: 'Email not found in user profile' });
-  }
-
-  // Generate a JWT token with the user's email
-  const token = jwt.sign({ email }, process.env.JWT_KEY!, { expiresIn: '1h' });
-
-  // Respond with the user's email in the token
-  res.json({ email, token });
-});
-
-
-export { router as  GoogleAuthRouter};
+export { router as GoogleAuthRouter };
