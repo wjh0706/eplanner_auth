@@ -95,11 +95,21 @@
 
 import express, { Request, Response, NextFunction } from "express";
 import passport from "passport";
+import session from "express-session";
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
 import jwt from "jsonwebtoken";
 
 // Create an Express router
 const router = express.Router();
+
+// Configure session middleware
+router.use(
+  session({
+    secret: "your-secret-key", // Change this to a secure key
+    resave: false,
+    saveUninitialized: true,
+  })
+);
 
 // Passport configuration
 passport.use(
