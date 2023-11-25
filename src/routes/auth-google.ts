@@ -113,7 +113,7 @@ passport.use(
       clientID:
         "1039548241933-5fvl39vo8ejc7ih599hmv2gvu0q2jfpp.apps.googleusercontent.com",
       clientSecret: "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",
-      callbackURL: "http://52.207.209.208.nip.io/api/auth/google/callback",
+      callbackURL: "http://3.84.8.12.nip.io/api/auth/google/callback",
     },
     (accessToken, refreshToken, profile, done) => {
       return done(null, { profile, accessToken, refreshToken });
