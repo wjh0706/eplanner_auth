@@ -70,7 +70,7 @@ router.get(
 );
 
 // Get user's email route
-router.post(
+router.get(
   "/api/auth/getemail",
   async (
     req: Request & { session: MySession },
