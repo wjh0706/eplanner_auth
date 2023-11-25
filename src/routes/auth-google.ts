@@ -189,6 +189,7 @@ router.use(
     secret: "your-secret-key", // Replace with a secure key
     resave: false,
     saveUninitialized: true,
+    rolling: true, // Add this line
   })
 );
 
