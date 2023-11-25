@@ -180,6 +180,7 @@ import express, { Request, Response, NextFunction } from "express";
 import passport from "passport";
 import session from "express-session";
 import { Strategy as GoogleStrategy, Profile } from "passport-google-oauth20";
+import { v4 as uuid } from 'uuid'; 
 
 const router = express.Router();
 
@@ -190,6 +191,9 @@ router.use(
     resave: false,
     saveUninitialized: true,
     rolling: true, // Add this line
+    genid: (req) => {
+      return uuid(); // Use a library like `uuid` to generate unique session IDs
+    },
   })
 );
 
@@ -212,7 +216,7 @@ passport.use(
 router.use(passport.initialize());
 router.use(passport.session());
 
-router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/api/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 // Google callback route
 router.get(
