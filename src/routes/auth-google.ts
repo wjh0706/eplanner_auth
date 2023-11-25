@@ -113,7 +113,7 @@ passport.use(
     (accessToken, refreshToken, profile, done) => {
       // Save the user's profile in the JWT payload
       const user = { profile, accessToken, refreshToken };
-      const token = jwt.sign(user, process.env.JWT_SECRET!, { expiresIn: "1h" });
+      const token = jwt.sign(user, process.env.JWT_KEY!, { expiresIn: "1h" });
       return done(null, token);
     }
   )
