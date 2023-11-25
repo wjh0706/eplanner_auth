@@ -5,3 +5,11 @@ declare module "express-session" {
     jwt?: string;
   }
 }
+
+declare global {
+    namespace Express {
+      interface Request {
+        currentUser?: UserPayload;
+      }
+    }
+  }
