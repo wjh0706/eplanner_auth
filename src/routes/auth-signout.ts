@@ -19,6 +19,4 @@ router.post('/api/auth/signout', (req: Request & { session: MySession }, res: Re
   res.status(200).send({ message: 'Sign-out successful' });
 });
 
-})
-
-export { router as SingOutRouter };
+export { router as SignOutRouter };
